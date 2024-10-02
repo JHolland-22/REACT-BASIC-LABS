@@ -1,16 +1,22 @@
-// Task.js
-import React from 'react';
+import React from "react";
 
 const Task = (props) => {
-    return (
-        <div className="card" style={{ backgroundColor: props.done ? 'lightgrey' : '#5bb4c4' }}>
-            <p className="title">{props.title}</p>
-            <p>{props.description}</p>
-            <p>Due: {props.deadline}</p>
-            <button onClick={props.markDone} className='doneButton'>Done</button> {/* Button to mark as done */}
-            <button className='deleteButton' onClick={props.deleteTask}>Delete</button> {/* Button to delete the task */}
-        </div>
-    );
-}
+  const priorityStyles = {
+    low: { color: 'yellow' },    
+    medium: { color: 'orange' },  
+    high: { color: 'red' }        
+  };
+
+  return (
+    <div className="card">
+      <h3>{props.title}</h3>
+      <p>{props.description}</p>
+      <p>Due: {props.deadline}</p>
+      <p style={priorityStyles[props.priority]}>Priority: {props.priority.charAt(0).toUpperCase() + props.priority.slice(1)}</p> {/* Display the priority */}
+      <button onClick={props.markDone} className='doneButton'>Done</button>
+      <button className='deleteButton' onClick={props.deleteTask}>Delete</button>
+    </div>
+  );
+};
 
 export default Task;
