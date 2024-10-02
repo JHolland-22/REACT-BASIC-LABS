@@ -1,5 +1,6 @@
 import './App.css';
 import Task from './components/Task';
+import AddTaskForm from './components/Forum'; 
 import React, { useState } from 'react';
 
 function App() {
@@ -18,11 +19,26 @@ function App() {
     console.log(`${taskIndex} ${tasks[taskIndex].done}`);
   };
 
-  // Add the deleteHandler function
   const deleteHandler = (taskIndex) => {
-    const tasks = [...taskState.tasks]; // Create a copy of the tasks
-    tasks.splice(taskIndex, 1); // Remove the selected task
-    setTaskState({ tasks }); // Update the state with the new tasks array
+    const tasks = [...taskState.tasks];
+    tasks.splice(taskIndex, 1);
+    setTaskState({ tasks });
+  };
+
+  // Add this function to handle task submission
+  const addTask = (event) => {
+    event.preventDefault(); // Prevent page refresh
+    const newTask = {
+      id: Math.random(), // Generate a unique ID
+      title: event.target.title.value,
+      description: event.target.description.value,
+      deadline: event.target.deadline.value,
+      done: false,
+    };
+    setTaskState((prevState) => ({
+      tasks: [...prevState.tasks, newTask] // Append the new task
+    }));
+    event.target.reset(); // Reset form fields
   };
 
   return (
@@ -31,14 +47,15 @@ function App() {
       {taskState.tasks.map((task, index) => (              
         <Task 
           title={task.title}
-          description={task.description || "No description available"} // Fallback if description is empty
+          description={task.description}
           deadline={task.deadline}
           key={task.id}
-          done={task.done} // Pass the done status to the Task component
-          markDone={() => doneHandler(index)} // Pass doneHandler as a prop
-          deleteTask={() => deleteHandler(index)} // Pass deleteHandler as a prop
+          done={task.done}
+          markDone={() => doneHandler(index)}
+          deleteTask={() => deleteHandler(index)}
         />
       ))}
+      <AddTaskForm addTask={addTask} /> {/* Render AddTaskForm and pass addTask */}
     </div>
   );
 }
