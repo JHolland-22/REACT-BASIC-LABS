@@ -12,10 +12,17 @@ function App() {
   });
 
   const doneHandler = (taskIndex) => {
+    const tasks = [...taskState.tasks];
+    tasks[taskIndex].done = !tasks[taskIndex].done;
+    setTaskState({ tasks });
+    console.log(`${taskIndex} ${tasks[taskIndex].done}`);
+  };
+
+  // Add the deleteHandler function
+  const deleteHandler = (taskIndex) => {
     const tasks = [...taskState.tasks]; // Create a copy of the tasks
-    tasks[taskIndex].done = !tasks[taskIndex].done; // Toggle the done state
-    setTaskState({ tasks }); // Update the state with the modified tasks
-    console.log(`${taskIndex} ${tasks[taskIndex].done}`); // Log the task index and its done status
+    tasks.splice(taskIndex, 1); // Remove the selected task
+    setTaskState({ tasks }); // Update the state with the new tasks array
   };
 
   return (
@@ -29,6 +36,7 @@ function App() {
           key={task.id}
           done={task.done} // Pass the done status to the Task component
           markDone={() => doneHandler(index)} // Pass doneHandler as a prop
+          deleteTask={() => deleteHandler(index)} // Pass deleteHandler as a prop
         />
       ))}
     </div>
