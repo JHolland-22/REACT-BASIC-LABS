@@ -1,7 +1,8 @@
+import React, { useState } from 'react';
 import './App.css';
 import Task from './components/Task';
-import AddTaskForm from './components/Forum'; 
-import React, { useState } from 'react';
+import AddTaskForm from './components/Forum';
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [taskState, setTaskState] = useState({
@@ -12,11 +13,16 @@ function App() {
     ]
   });
 
+  const [formState, setFormState] = useState({
+    title: "",
+    description: "",
+    deadline: ""
+  });
+
   const doneHandler = (taskIndex) => {
     const tasks = [...taskState.tasks];
     tasks[taskIndex].done = !tasks[taskIndex].done;
     setTaskState({ tasks });
-    console.log(`${taskIndex} ${tasks[taskIndex].done}`);
   };
 
   const deleteHandler = (taskIndex) => {
@@ -25,26 +31,42 @@ function App() {
     setTaskState({ tasks });
   };
 
-  // Add this function to handle task submission
-  const addTask = (event) => {
-    event.preventDefault(); // Prevent page refresh
-    const newTask = {
-      id: Math.random(), // Generate a unique ID
-      title: event.target.title.value,
-      description: event.target.description.value,
-      deadline: event.target.deadline.value,
-      done: false,
-    };
-    setTaskState((prevState) => ({
-      tasks: [...prevState.tasks, newTask] // Append the new task
-    }));
-    event.target.reset(); // Reset form fields
+  const formChangeHandler = (event) => {
+    let form = { ...formState };
+
+    switch (event.target.name) {
+      case "title":
+        form.title = event.target.value;
+        break;
+      case "description":
+        form.description = event.target.value;
+        break;
+      case "deadline":
+        form.deadline = event.target.value;
+        break;
+      default:
+        form = formState;
+    }
+    setFormState(form);
+    console.log(formState); // Log the current form state
+  };
+
+  const formSubmitHandler = (event) => {
+    event.preventDefault();
+
+    const tasks = [...taskState.tasks];
+    const form = { ...formState };
+
+    form.id = uuidv4(); // Generate a unique ID
+    tasks.push(form); // Add new task
+    setTaskState({ tasks }); // Update state
+    setFormState({ title: "", description: "", deadline: "" }); // Reset form fields
   };
 
   return (
     <div className="container">
       <h1>Tasky</h1>
-      {taskState.tasks.map((task, index) => (              
+      {taskState.tasks.map((task, index) => (
         <Task 
           title={task.title}
           description={task.description}
@@ -55,7 +77,7 @@ function App() {
           deleteTask={() => deleteHandler(index)}
         />
       ))}
-      <AddTaskForm addTask={addTask} /> {/* Render AddTaskForm and pass addTask */}
+      <AddTaskForm submit={formSubmitHandler} change={formChangeHandler} />
     </div>
   );
 }
